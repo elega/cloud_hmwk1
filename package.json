@@ -1,0 +1,23 @@
+{
+  "name": "application-name",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "ejs": "^2.5.2",
+    "elasticsearch": "^11.0.1",
+    "express": "^3.4.8",
+    "http-aws-es": "^1.1.3",
+    "jade": "^1.11.0",
+    "mongodb": "^2.2.10",
+    "mongoose": "^3.9.7",
+    "passport": "^0.2.2",
+    "passport-facebook": "^1.0.3",
+    "passport-twitter": "^1.0.4",
+    "socket.io": "^0.9.17",
+    "stylus": "^0.54.5",
+    "twit": ">1.1.20"
+  }
+}

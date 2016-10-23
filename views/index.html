@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- This stylesheet contains specific styles for displaying the map
+         on this page. Replace it with your own styles as described in the
+         documentation:
+         https://developers.google.com/maps/documentation/javascript/tutorial -->
+    <title> Twitter Map Elega and Bluestar</title>
+    <meta name="viewport" content = "initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+    	html, body, #map{
+    		height: 100%;
+    		margin: 0px;
+    		padding: 0px;
+    	}
+      #floating-title {
+        position: absolute;
+        top: 10px;
+        right: 4%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 2px solid #999;
+        text-align: center;
+        font-size: 18;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      #floating-input{
+      	position :absolute;
+      	bottom: 20px;
+      	left: 4%;
+      	z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 2px solid #999;
+      	font-size: 18;
+      	padding-left: 10px;
+        padding-right: 10px;
+      }
+    </style>
+    <script>
+    var	map;
+    var infowindow;
+    var markerCluster;
+    var heatMap;
+    var searchPoint;
+    var markers = [];
+    var points = [
+/*
+    {lat:40.806,lng:-73.963,twi:"像我们富土康这样的international enterprise"},
+    {lat:40.85,lng:-73.92,twi:"后悬挂断了"},
+    {lat:40.75,lng:-73.94,twi:"我组装的卡丁车质量都比这好"},
+    {lat:40.85,lng:-73.99,twi:"他们的质检员是羊驼么"},
+    {lat:41.00,lng:-74,twi:"像我这样的sunshine boy"}
+*/
+    ];      
+    function initMap() {
+      	var mapOptions = {
+        center: {lat: 40.806, lng: -73.963},
+        scrollwheel: false,
+        zoom: 10,
+        disableDoubleClickZoom: true 
+        };
+        // Create a map object and specify the DOM element for display.
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        infowindow = new google.maps.InfoWindow({
+        	maxWidth: 600
+        });
+        google.maps.event.addListener(map, 'dblclick', function(e) {
+          placeSearchPoint(e.latLng);
+        });
+        Markers();
+    }
+    //Place the searchCenter
+    function placeSearchPoint(position) {
+      var image = {
+          url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+          // This marker is 20 pixels wide by 32 pixels high.
+          size: new google.maps.Size(20, 32),
+          // The origin for this image is (0, 0).
+          origin: new google.maps.Point(0, 0),
+          // The anchor for this image is the base of the flagpole at (0, 32).
+          anchor: new google.maps.Point(0, 32)
+      };
+      if(!$.isEmptyObject(searchPoint)){
+        searchPoint.setMap(null);
+        searchPoint = null;
+      }
+      searchPoint = new google.maps.Marker({
+      position: position,
+      map: map,
+      icon: image
+    });  
+    //map.panTo(position);
+    document.getElementById('searchLattitude').value = position.lat();
+    document.getElementById('searchLongitude').value = position.lng();
+	search();
+  }
+
+
+	//Create Market on Map	    
+      function Markers(){
+        clearMarkers();
+        $.each(points,function(key,point){
+          var position = new google.maps.LatLng(point.lat,point.lng);
+
+          var marker = new google.maps.Marker({
+              position: position,
+              map: map
+          });
+          //Listen to click
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(point.twi);
+            infowindow.open(map, this);
+          });
+          markers.push(marker);
+        })       
+      }
+
+
+   //Create Cluster Markers   
+      function tCluster(){
+        clearMarkers();
+        $.each(points,function(key,point){
+          var position = new google.maps.LatLng(point.lat,point.lng);
+
+          var marker = new google.maps.Marker({
+              position: position
+          });
+          markers.push(marker);
+        })
+        markerCluster = new MarkerClusterer(map,markers,
+          {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});  
+      }
+
+    //Clear Markers  
+      function clearMarkers(){
+        $.each(markers,function(key,marker){
+            marker.setMap(null); 
+        })
+        //Clear Cluster Marksers
+        markers = [];
+        if(!$.isEmptyObject(markerCluster)){
+          markerCluster.clearMarkers();
+        }
+      }
+    </script>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="markerclusterer.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=dummy&callback=initMap" async defer></script>	
+  </head>
+
+
+
+  <body>
+ 	<div id="floating-title">
+ 		<p>Twitter Map powered by Elega & Bluestar <p>
+    <input Type="radio" name="group1" onclick="Markers();" checked>Markers&nbsp&nbsp
+    <input Type="radio" name="group1" onclick="tCluster();"> Cluster&nbsp&nbsp
+ 	</div>
+ 	<div id="floating-input">
+ 		<form action=test.html method=post>
+ 		<p>KeyWord:       
+      	<select id="keyWord">
+          <option value="Hillary">Hillary</option>
+          <option value="Trump">Trump</option>  
+          <option value="a">a</option>  
+          <option value="job">job</option>  
+          <option value="2016">2016</option>  
+          <option value="news">News</option>  
+          <option value="LOL">LOL</option>  
+          <option value="USA">USA</option>  
+
+		  </select>  
+      	</p>
+        <p>Lattitude:&nbsp&nbsp
+          <input id="searchLattitude" type="text" value="40.806">
+        </p>
+        <p>Longitude:
+          <input id="searchLongitude" type="text" value="-73.963">  
+        </p>
+      	<p>Distance:&nbsp&nbsp
+      		<input id="distance" type="number" min="0" max="10000" value="500">km&nbsp&nbsp
+      		<input id="submit" type="button" value="Search" onclick="search()">
+      	</p>
+  		<input id="open" type="button" value="Open Stream" onclick="stream_open()">
+   		<input id="close" type="button" value="Close Stream" onclick="stream_close()">
+		<label id='record'>found 0 records</label>
+      	</form>
+    </div>
+    <div id="map"></div>
+  </body>
+  
+  
+<script type="text/javascript">
+	var timer = setInterval(myTimer, 5000);
+	function myTimer() {
+		sendpost(document.getElementById("keyWord").value,document.getElementById("distance").value,
+		document.getElementById("searchLongitude").value,document.getElementById("searchLattitude").value );
+
+	}
+	
+
+	function search()
+	{
+		sendpost(document.getElementById("keyWord").value,document.getElementById("distance").value,
+		document.getElementById("searchLongitude").value,document.getElementById("searchLattitude").value );
+		
+	}
+	
+	function stream_open()
+	{
+		$.ajax({
+		type: "GET",
+		url: "oepn",
+		data: {},
+		dataType: 'text',
+		success: function(msg){
+			alert(msg);
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown){
+			alert('System message', 'Time out' + textStatus, 'info');
+		}
+	});	
+	}
+	
+
+	function stream_close()
+	{
+		$.ajax({
+		type: "GET",
+		url: "close",
+		data: {},
+		dataType: 'text',
+		success: function(msg){
+			alert(msg);
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown){
+			alert('System message', 'Time out' + textStatus, 'info');
+		}
+	});	
+	}
+	
+
+	function success_handler(msgResult){
+		var tweets = eval(msgResult);
+		document.getElementById('record').innerHTML = "found "+ tweets.length.toString()+ " records";
+//		alert("found "+ tweets.length.toString()+ " records");
+		points = [];
+		for (var i = 0;i<tweets.length;++i){
+			points.push({lat:tweets[i].location.lat,lng:tweets[i].location.lon,twi:tweets[i].text });
+		}
+		Markers();
+/*
+		tweets[i].location.lat
+			tweets[i].location.lon
+			tweets[i].text
+*/
+		
+	}
+	
+
+
+	
+	function sendpost(keyword,dist,lat,log){
+		$.ajax({
+		type: "GET",
+		url: "ajax",
+		data: {"keyword" :keyword,"dist":dist,"log":log,"lat":lat },
+		dataType: 'text',
+		success: success_handler,
+		error: function(XMLHttpRequest, textStatus, errorThrown){
+			alert('System message', 'Time out' + textStatus, 'info');
+		}
+	});
+}
+
+	
+</script>
+  
+ </html>

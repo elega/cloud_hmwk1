@@ -51,7 +51,7 @@ exports.search_tweet = function(key_word,distance,lon,lat,ajax_respond){
   client.search({
     index: 'twitter',
     type: 'tweet_debug',
-    size: 500,
+    size: 2000,
     body: {"query": {
       "bool": {
         "must": {
